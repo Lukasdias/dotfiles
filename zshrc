@@ -150,7 +150,8 @@ export PATH="$ANDROID_HOME/build-tools/34.0.0:$PATH"
 # ADB bridge to Windows Android Studio
 export ADB_SERVER_SOCKET=tcp:$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):5037
 
-export SUPERMEMORY_API_KEY="REDACTED"
+# Load secrets (not tracked in git)
+[[ -f ~/.secrets ]] && source ~/.secrets
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
