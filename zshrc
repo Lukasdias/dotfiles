@@ -140,6 +140,26 @@ alias tmux-keys='/usr/bin/grep -iE "split|pan|window|navigate" <<< "$(tmux list-
 alias tmux-sessions='tmux list-sessions'
 alias tmux-windows='tmux list-windows'
 
+# ===== WSL Integration =====
+# Browser and file handlers for WSL
+export BROWSER="wslview"
+export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
+export LIBGL_ALWAYS_INDIRECT=1
+
+# Open files/URLs from WSL
+open() {
+  if [ -f "$1" ]; then
+    wslview "$1"
+  elif [ -d "$1" ]; then
+    explorer.exe "$1"
+  else
+    wslview "$1"
+  fi
+}
+
+# Git web browsing in lazygit
+export GIT_BROWSER="wslview"
+
 # ===== Android SDK =====
 # Point to Windows SDK (mounted in WSL) so Android Studio and Gradle agree on SDK location
 export ANDROID_HOME="/mnt/c/Users/diasl/AppData/Local/Android/Sdk"
