@@ -59,3 +59,8 @@ vim.diagnostic.config({
     prefix = "",
   },
 })
+
+-- Compatibility shim for deprecated vim.lsp.buf_get_clients
+vim.lsp.buf_get_clients = function(bufnr)
+  return vim.lsp.get_clients({ bufnr = bufnr or 0 })
+end
