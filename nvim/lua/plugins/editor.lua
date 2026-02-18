@@ -114,11 +114,11 @@ return {
     "echasnovski/mini.animate",
     event = "VeryLazy",
     opts = {
-      cursor = { enable = true, timing = function() return 150 end },
+      cursor = { enable = false },
       scroll = { enable = false },
-      resize = { enable = true, timing = function() return 100 end },
-      open = { enable = true, timing = function() return 150 end },
-      close = { enable = true, timing = function() return 150 end },
+      resize = { enable = false },
+      open = { enable = false },
+      close = { enable = false },
     },
   },
 

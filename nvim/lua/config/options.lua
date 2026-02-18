@@ -25,10 +25,7 @@ vim.opt.lazyredraw = true
 vim.opt.ttyfast = true
 vim.opt.synmaxcol = 200
 
--- Smooth UI animations
-vim.opt.mousescroll = "ver:1,hor:1"
-vim.g.neovide_cursor_animation_length = 0.05
-vim.g.neovide_scroll_animation_length = 0.1
+vim.opt.mousescroll = "ver:3,hor:3"
 
 -- Splits
 vim.opt.splitright = true
