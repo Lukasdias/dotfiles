@@ -5,45 +5,118 @@ return {
     config = function()
       local Terminal = require("toggleterm.terminal").Terminal
 
-      local lazygit = Terminal:new({
+      local right_panel_buf = nil
+      local right_panel_win = nil
+      local current_right_app = nil
+
+      local function open_in_right_panel(cmd, app_name)
+        if right_panel_win and vim.api.nvim_win_is_valid(right_panel_win) then
+          vim.api.nvim_set_current_win(right_panel_win)
+          vim.cmd("terminal " .. cmd)
+          current_right_app = app_name
+        else
+          vim.cmd("vsplit")
+          vim.cmd("wincmd l")
+          local total_width = vim.o.columns
+          local right_width = math.floor(total_width * 0.38)
+          vim.cmd("vertical resize " .. right_width)
+          right_panel_win = vim.api.nvim_get_current_win()
+          vim.cmd("terminal " .. cmd)
+          current_right_app = app_name
+        end
+        vim.cmd("startinsert!")
+      end
+
+      local lazygit_term = Terminal:new({
         cmd = "lazygit",
         dir = "git_dir",
         direction = "vertical",
-        size = vim.o.columns * 0.4,
         on_open = function(term)
           vim.cmd("startinsert!")
           vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+          vim.api.nvim_buf_set_keymap(term.bufnr, "n", "<leader>gx", "<cmd>lua toggle_right_panel('opencode')<CR>", { noremap = true, silent = true, desc = "Switch to opencode" })
         end,
         on_close = function()
-          vim.cmd("startinsert!")
+          right_panel_win = nil
+          current_right_app = nil
         end,
       })
 
       local opencode_term = Terminal:new({
         cmd = "opencode",
         direction = "vertical",
-        size = vim.o.columns * 0.4,
         on_open = function(term)
           vim.cmd("startinsert!")
           vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+          vim.api.nvim_buf_set_keymap(term.bufnr, "n", "<leader>gx", "<cmd>lua toggle_right_panel('lazygit')<CR>", { noremap = true, silent = true, desc = "Switch to lazygit" })
+        end,
+        on_close = function()
+          right_panel_win = nil
+          current_right_app = nil
         end,
       })
 
       local bottom_term = Terminal:new({
         cmd = vim.o.shell,
         direction = "horizontal",
-        size = 15,
+        size = 12,
         on_open = function()
           vim.cmd("startinsert!")
         end,
       })
 
+      _G.toggle_right_panel = function(app)
+        if app == "lazygit" then
+          if current_right_app == "lazygit" and right_panel_win and vim.api.nvim_win_is_valid(right_panel_win) then
+            vim.api.nvim_win_close(right_panel_win, true)
+            right_panel_win = nil
+            current_right_app = nil
+          else
+            if right_panel_win and vim.api.nvim_win_is_valid(right_panel_win) then
+              vim.api.nvim_win_close(right_panel_win, true)
+            end
+            vim.cmd("vsplit")
+            vim.cmd("wincmd l")
+            local total_width = vim.o.columns
+            local right_width = math.floor(total_width * 0.38)
+            vim.cmd("vertical resize " .. right_width)
+            right_panel_win = vim.api.nvim_get_current_win()
+            vim.cmd("terminal lazygit")
+            current_right_app = "lazygit"
+            vim.cmd("startinsert!")
+            vim.api.nvim_buf_set_keymap(0, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+            vim.api.nvim_buf_set_keymap(0, "n", "<leader>gx", "<cmd>lua toggle_right_panel('opencode')<CR>", { noremap = true, silent = true })
+          end
+        elseif app == "opencode" then
+          if current_right_app == "opencode" and right_panel_win and vim.api.nvim_win_is_valid(right_panel_win) then
+            vim.api.nvim_win_close(right_panel_win, true)
+            right_panel_win = nil
+            current_right_app = nil
+          else
+            if right_panel_win and vim.api.nvim_win_is_valid(right_panel_win) then
+              vim.api.nvim_win_close(right_panel_win, true)
+            end
+            vim.cmd("vsplit")
+            vim.cmd("wincmd l")
+            local total_width = vim.o.columns
+            local right_width = math.floor(total_width * 0.38)
+            vim.cmd("vertical resize " .. right_width)
+            right_panel_win = vim.api.nvim_get_current_win()
+            vim.cmd("terminal opencode")
+            current_right_app = "opencode"
+            vim.cmd("startinsert!")
+            vim.api.nvim_buf_set_keymap(0, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+            vim.api.nvim_buf_set_keymap(0, "n", "<leader>gx", "<cmd>lua toggle_right_panel('lazygit')<CR>", { noremap = true, silent = true })
+          end
+        end
+      end
+
       _G.toggle_lazygit = function()
-        lazygit:toggle()
+        toggle_right_panel("lazygit")
       end
 
       _G.toggle_opencode = function()
-        opencode_term:toggle()
+        toggle_right_panel("opencode")
       end
 
       _G.toggle_bottom_term = function()
@@ -51,23 +124,36 @@ return {
       end
 
       _G.open_dev_layout = function()
-        local current_win = vim.api.nvim_get_current_win()
+        local main_win = vim.api.nvim_get_current_win()
         
         vim.cmd("vsplit")
         vim.cmd("wincmd l")
-        vim.cmd("vertical resize " .. math.floor(vim.o.columns * 0.4))
+        local total_width = vim.o.columns
+        local right_width = math.floor(total_width * 0.38)
+        vim.cmd("vertical resize " .. right_width)
+        right_panel_win = vim.api.nvim_get_current_win()
+        vim.cmd("terminal lazygit")
+        current_right_app = "lazygit"
+        vim.cmd("startinsert!")
+        vim.api.nvim_buf_set_keymap(0, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+        vim.api.nvim_buf_set_keymap(0, "n", "<leader>gx", "<cmd>lua toggle_right_panel('opencode')<CR>", { noremap = true, silent = true })
         
-        lazygit:open()
-        
-        vim.api.nvim_set_current_win(current_win)
+        vim.api.nvim_set_current_win(main_win)
         
         vim.cmd("split")
         vim.cmd("wincmd j")
-        vim.cmd("resize 15")
-        
+        vim.cmd("resize 12")
         bottom_term:open()
         
-        vim.api.nvim_set_current_win(current_win)
+        vim.api.nvim_set_current_win(main_win)
+      end
+
+      _G.close_right_panel = function()
+        if right_panel_win and vim.api.nvim_win_is_valid(right_panel_win) then
+          vim.api.nvim_win_close(right_panel_win, true)
+          right_panel_win = nil
+          current_right_app = nil
+        end
       end
 
       require("toggleterm").setup({
@@ -92,10 +178,12 @@ return {
     keys = {
       { "<leader>t", "<cmd>ToggleTerm<CR>", desc = "Toggle terminal" },
       { "<leader>T", "<cmd>ToggleTerm direction=float<CR>", desc = "Toggle floating terminal" },
-      { "<leader>gl", "<cmd>lua toggle_lazygit()<CR>", desc = "Toggle lazygit" },
-      { "<leader>go", "<cmd>lua toggle_opencode()<CR>", desc = "Toggle opencode in terminal" },
+      { "<leader>gl", "<cmd>lua toggle_lazygit()<CR>", desc = "Toggle lazygit in right panel" },
+      { "<leader>go", "<cmd>lua toggle_opencode()<CR>", desc = "Toggle opencode in right panel" },
+      { "<leader>gx", "<cmd>lua toggle_right_panel(current_right_app == 'lazygit' and 'opencode' or 'lazygit')<CR>", desc = "Switch lazygit/opencode" },
       { "<leader>gt", "<cmd>lua toggle_bottom_term()<CR>", desc = "Toggle bottom terminal" },
       { "<leader>gL", "<cmd>lua open_dev_layout()<CR>", desc = "Open dev layout (editor | lazygit / terminal)" },
+      { "<leader>gc", "<cmd>lua close_right_panel()<CR>", desc = "Close right panel" },
     },
   },
 
