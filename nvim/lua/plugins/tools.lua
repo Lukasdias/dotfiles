@@ -164,7 +164,7 @@ return {
         shading_factor = 2,
         start_in_insert = true,
         insert_mappings = true,
-        persist_size = true,
+        persist_size = false,
         direction = "float",
         close_on_exit = true,
         shell = vim.o.shell,
