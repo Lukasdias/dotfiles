@@ -262,6 +262,7 @@ require("lazy").setup({
       "nvim-telescope/telescope-ui-select.nvim",
       "nvim-telescope/telescope-file-browser.nvim",
     },
+    cmd = "Telescope",
     keys = {
       { "<leader>ff", "<cmd>Telescope find_files<CR>", desc = "Find files" },
       { "<leader>fg", "<cmd>Telescope live_grep<CR>", desc = "Find in files (grep)" },
