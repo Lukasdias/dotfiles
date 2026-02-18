@@ -142,23 +142,39 @@ alias tmux-windows='tmux list-windows'
 
 # ===== WSL Integration =====
 # Browser and file handlers for WSL
-export BROWSER="wslview"
 export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
 export LIBGL_ALWAYS_INDIRECT=1
 
-# Open files/URLs from WSL
+# Smart open function for WSL - handles files, directories, and URLs
 open() {
-  if [ -f "$1" ]; then
-    wslview "$1"
-  elif [ -d "$1" ]; then
-    explorer.exe "$1"
+  local target="$1"
+  if [ -z "$target" ]; then
+    echo "Usage: open <file|directory|URL>"
+    return 1
+  fi
+  
+  # Use explorer.exe for everything in WSL (most reliable)
+  if [[ "$target" =~ ^https?:// ]]; then
+    # For URLs, use start command via cmd.exe
+    cmd.exe /c start "" "$target" 2>/dev/null
+  elif [ -d "$target" ]; then
+    # For directories
+    explorer.exe "$target" 2>/dev/null
+  elif [ -f "$target" ]; then
+    # For files
+    explorer.exe "$target" 2>/dev/null
   else
-    wslview "$1"
+    # Assume it's a URL or search query
+    cmd.exe /c start "" "$target" 2>/dev/null
   fi
 }
 
-# Git web browsing in lazygit
-export GIT_BROWSER="wslview"
+# Set BROWSER for tools that use it
+export BROWSER="cmd.exe /c start"
+export GIT_BROWSER="cmd.exe /c start"
+
+# Alias xdg-open to use our open function
+alias xdg-open='open'
 
 # ===== Android SDK =====
 # Point to Windows SDK (mounted in WSL) so Android Studio and Gradle agree on SDK location
