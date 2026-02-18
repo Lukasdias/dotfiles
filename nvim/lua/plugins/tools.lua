@@ -59,7 +59,7 @@ return {
       local bottom_term = Terminal:new({
         cmd = vim.o.shell,
         direction = "horizontal",
-        size = 12,
+        size = 7,
         on_open = function()
           vim.cmd("startinsert!")
         end,
@@ -142,7 +142,7 @@ return {
         
         vim.cmd("split")
         vim.cmd("wincmd j")
-        vim.cmd("resize 12")
+        vim.cmd("resize 7")
         bottom_term:open()
         
         vim.api.nvim_set_current_win(main_win)
