@@ -33,7 +33,3 @@ keymap("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
 -- Terminal mode
 keymap("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-keymap("t", "<A-h>", "<C-\\><C-n><C-w>h", { desc = "Terminal: move to left window" })
-keymap("t", "<A-j>", "<C-\\><C-n><C-w>j", { desc = "Terminal: move to below window" })
-keymap("t", "<A-k>", "<C-\\><C-n><C-w>k", { desc = "Terminal: move to above window" })
-keymap("t", "<A-l>", "<C-\\><C-n><C-w>l", { desc = "Terminal: move to right window" })
