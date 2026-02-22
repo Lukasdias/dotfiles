@@ -29,6 +29,7 @@ require("lazy").setup({
     { import = "plugins.lsp" },
     { import = "plugins.tools" },
     { import = "plugins.completion" },
+    { import = "plugins.copilot" },
   },
   defaults = { lazy = false },
   install = { colorscheme = { "catppuccin-mocha" } },

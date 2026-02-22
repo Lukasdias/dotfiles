@@ -8,11 +8,17 @@ return {
     "saadparwaiz1/cmp_luasnip",
     "onsails/lspkind.nvim",
     "L3MON4D3/LuaSnip",
+    "zbirenbaum/copilot-cmp",
   },
   config = function()
     local cmp = require("cmp")
     local ok_luasnip, luasnip = pcall(require, "luasnip")
     local ok_lspkind, lspkind = pcall(require, "lspkind")
+    local ok_copilot_cmp, copilot_cmp = pcall(require, "copilot-cmp")
+
+    if ok_copilot_cmp then
+      copilot_cmp.setup()
+    end
 
     cmp.setup({
       snippet = {
@@ -54,7 +60,8 @@ return {
         end, { "i", "s" }),
       }),
       sources = cmp.config.sources(
-        { { name = "nvim_lsp", priority = 1000 } },
+        { { name = "copilot", priority = 1000 } },
+        { { name = "nvim_lsp", priority = 900 } },
         (ok_luasnip and { { name = "luasnip", priority = 750 } } or {}),
         { { name = "buffer", priority = 500 }, { name = "path", priority = 250 } }
       ),

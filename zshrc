@@ -67,7 +67,7 @@ autoload -Uz add-zsh-hook
 export FLYCTL_INSTALL="/home/lukashdias/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
-eval "$(~/.local/bin/mise activate zsh)"
+
 
 export PATH=/home/lukashdias/.opencode/bin:$PATH
 
